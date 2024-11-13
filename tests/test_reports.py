@@ -1,6 +1,10 @@
 import pytest
 import pandas as pd
 
+def pytest_configure(config):
+    if config.pluginmanager.hasplugin("html"):
+        config._metadata["CSV report"] = "Focal Report Test Results"
+
 # Sample function to load data (use your actual loading logic)
 def load_csv(file_path):
     return pd.read_csv(file_path)
@@ -9,12 +13,18 @@ def load_csv(file_path):
 @pytest.fixture
 def production_data():
     return load_csv(
-        '/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.csv')
+       '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.csv')
+
+#         PDF PROD data
+#        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.pdf)'
 
 @pytest.fixture
 def staging_data():
     return load_csv(
-        '/focal_system_env/tests/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.csv')
+        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.csv')
+
+#       PDF Stage data
+#        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.pdf')
 
 # Tests Case 1: Verify Column Names Match
 def test_column_names(production_data, staging_data):
@@ -36,7 +46,7 @@ def test_value_consistency(production_data, staging_data):
 
 # Tests Case 5: Verify the Received Dates Greater Than Marked At
 def test_time_logic(production_data, staging_data):
-    # Example: Check if 'Last Received Date' <= 'Marked At'
+    # Check if 'Last Received Date' <= 'Marked At'
     assert all(pd.to_datetime(production_data['Last Received Date']) <= pd.to_datetime(production_data['Marked At'])), \
         "Invalid dates in production data"
     assert all(pd.to_datetime(staging_data['Last Received Date']) <= pd.to_datetime(staging_data['Marked At'])), \

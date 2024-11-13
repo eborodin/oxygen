@@ -4,9 +4,9 @@ import json
 
 # Load the production and staging data
 prod_data = pd.read_csv(
-    '/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.csv')
+    '/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.csv')
 stage_data = pd.read_csv(
-    '/focal_system_env/tests/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.csv')
+    '/focal_system_env/tests/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.csv')
 
 # Check if the columns match
 if list(prod_data.columns) != list(stage_data.columns):

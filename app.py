@@ -53,4 +53,4 @@ def generate_report(mismatches, invalid_prod_dates, invalid_stage_dates):
 
 def main():
     # File paths (update paths based on your file locations)
-    prod_file = '/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.csv'
+    prod_file = '/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.csv'

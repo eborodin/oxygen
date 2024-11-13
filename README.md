@@ -26,6 +26,10 @@ Install Pytest:
 
       pip install pytest
 
+PDF Required Libraries
+
+    pip install pytest pdfplumber pandas
+
 Files:
 
 *	Place the production and staging CSV or PDF files in the appropriate directories. Ensure the paths are correctly configured in the script.
@@ -42,5 +46,8 @@ From your project directory, run:
 
         pytest tests/test_reports.py
 
+In order to get HTML report
 
-3
+        pytest /Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests --html=report.html --self-contained-html
+
+----
