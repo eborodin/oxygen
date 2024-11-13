@@ -1,0 +1,13 @@
+{
+  "columns_check": [
+    "Store Name",
+    "Barcode",
+    "Article Number",
+    "Product Name",
+    "Brand",
+    "Case Pack Size",
+    "Current SR",
+    "Marked As",
+    "Last Received Date"
+  ]
+}
