@@ -1,0 +1,92 @@
+import pytest
+import pdfplumber
+import pandas as pd
+from pandas import DataFrame
+import os
+from pdf2image import convert_from_path
+import pytesseract
+from PIL import Image
+from pytesseract import image_to_string
+
+
+# Fixtures for production and staging PDF data
+"""
+@pytest.fixture
+def production_pdf_data():
+    production_pdf_path = '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.pdf'
+    return extract_table_from_pdf(production_pdf_path)
+"""
+@pytest.fixture
+def production_pdf_data():
+    production_pdf_path = '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.pdf'
+    return extract_table_from_pdf(production_pdf_path)
+
+def test_debug_pdf_parsing():
+    production_pdf_path = '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.pdf'
+    with pdfplumber.open(production_pdf_path) as pdf:
+        for page in pdf.pages:
+            print(page.extract_tables())
+
+@pytest.fixture
+def staging_pdf_data():
+    staging_pdf_path = '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.pdf'
+    assert os.path.exists(staging_pdf_path), f"File not found: {staging_pdf_path}"
+    return extract_table_from_pdf(staging_pdf_path)
+
+def test_debug_pdf_parsing_prod():
+    staging_pdf_path = '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.pdf'
+    with pdfplumber.open(staging_pdf_path) as pdf:
+        for page in pdf.pages:
+            print(page.extract_tables())
+
+def test_debug_pdf_parsing_stage():
+    production_pdf_path = '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.pdf'
+    # Open the PDF file with pdfplumber
+    with pdfplumber.open(production_pdf_path) as pdf:
+        for page_num, page in enumerate(pdf.pages, start=1):
+            print(f"\n--- Page {page_num} ---")
+
+            # Extract tables on the current page
+            tables = page.extract_tables()
+            if not tables:
+                print("No tables found on this page.")
+            else:
+                for table_num, table in enumerate(tables, start=1):
+                    print(f"Table {table_num}:")
+                    for row in table:
+                        print(row)  # Print each row of the table for clarity
+
+# Function to extract tables from a PDF
+def extract_table_from_pdf(pdf_path):
+    with pdfplumber.open(pdf_path) as pdf:
+        data = []
+        for page_num, page in enumerate(pdf.pages, start=1):
+            print(f"Extracting data from page {page_num} of {pdf_path}")
+            tables = page.extract_tables()
+            if not tables:
+                print(f"No tables found on page {page_num}.")
+            else:
+                print(f"Tables found on page {page_num}: {tables}")
+                for table in tables:
+                    data.extend(table)
+    # If no data was extracted, return an empty DataFrame
+    if not data:
+        print(f"No tables extracted from {pdf_path}.")
+        return pd.DataFrame()
+    # Convert to DataFrame and set the first row as header
+    df = pd.DataFrame(data)
+    df.columns = df.iloc[0]  # Set first row as header
+    df = df[1:].reset_index(drop=True)  # Remove the header row
+    return df
+
+with pdfplumber.open(production_pdf_data) as pdf:
+    page = pdf.pages[0]  # Replace 0 with the desired page index
+    tables = page.extract_tables()
+    print(f"Tables on page 1: {tables}")
+
+images = convert_from_path(production_pdf_data)
+for i, image in enumerate(images):
+    image.save(f'page_{i + 1}.png', 'PNG')
+
+text = pytesseract.image_to_string(Image.open("page_1.png"))
+print(text)

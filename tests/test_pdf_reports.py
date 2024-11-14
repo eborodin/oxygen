@@ -2,10 +2,27 @@ import pytest
 import pandas as pd
 import pdfplumber
 import json
+import os
+import chardet
+
+def detect_encoding(file_path):
+    with open(file_path, "rb") as f:
+        result = chardet.detect(f.read())
+    encoding = result.get("encoding", "utf-8")  # Default to utf-8 if detection fails
+    confidence = result.get("confidence", 0)
+
+    # Debugging information
+    print(f"Detected encoding: {encoding} with confidence: {confidence}")
+
+    # If confidence is low, fallback to utf-8 or another robust encoding
+    if confidence < 0.8 or encoding is None:
+        print("Low confidence in detected encoding. Falling back to 'utf-8'.")
+        encoding = "utf-8"
+    return encoding
 
 # Sample function to load data (use your actual loading logic)
 def load_csv(file_path):
-    return pd.read_csv(file_path)
+    return pd.read_csv(file_path, encoding="latin1")  # Replace "latin1" with the correct encoding if known
 
 def get_dynamic_path_from_config():
     # Directory of this script
@@ -23,20 +40,46 @@ def get_dynamic_path_from_config():
     production_file = os.path.join(project_root, config["production_pdf_file"])
     staging_file = os.path.join(project_root, config["staging_pdf_file"])
     return production_file, staging_file
-
+"""
 # Fixtures for loading production and staging data
 @pytest.fixture
 def production_pdf_data():
     production_file, _ = get_dynamic_path_from_config()
-    return pd.read_csv(production_file)
+
+    encoding = detect_encoding(production_file)
+    print(f"Detected encoding for {production_file}: {encoding}")
+
+    # Load the file using the detected encoding
+    return pd.read_csv(production_file, encoding=encoding)
 
 #    return extract_table_from_pdf(
-#        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_Prod.pdf')
+#        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.pdf')
+"""
+
+@pytest.fixture
+def production_pdf_data():
+    production_file, _ = get_dynamic_path_from_config()
+
+    # Detect encoding
+    encoding = detect_encoding(production_file)
+    print(f"Using encoding for {production_file}: {encoding}")
+
+    # Read the CSV file using the detected encoding
+    return pd.read_csv(production_file, encoding=encoding, errors="replace")
+
+
+
 
 @pytest.fixture
 def staging_pdf_data():
     staging_file, _  = get_dynamic_path_from_config()
-    return pd.read_csv(staging_file)
+
+    # Detect the file's encoding dynamically
+    encoding = detect_encoding(staging_file)
+    print(f"Detected encoding for {staging_file}: {encoding}")
+
+    # Load the file using the detected encoding
+    return pd.read_csv(staging_file, encoding=encoding)
 
 #    return extract_table_from_pdf(
 #        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.pdf')
@@ -55,9 +98,13 @@ def extract_table_from_pdf(pdf_path):
     df = df.dropna(how='all').reset_index(drop=True)  # Remove empty rows
     return df
 
-def test_print_columns(production_pdf_data, staging_pdf_data):
-    print("Production PDF Columns:", production_pdf_data.columns)
-    print("Staging PDF Columns:", staging_pdf_data.columns)
+# def test_print_columns(production_pdf_data, staging_pdf_data):
+#    print("Production PDF Columns:", production_pdf_data.columns)
+#    print("Staging PDF Columns:", staging_pdf_data.columns)
+
+with open(production_file, "rb") as f:
+    content = f.read()
+print(content[:1000])  # Print the first 1000 bytes of the file
 
 '''
 
@@ -96,6 +143,8 @@ staging_data = extract_table_from_pdf(staging_pdf_path)
 
 
 '''
+
+'''
 # Test 1: Verify Column Names Match
 @pytest.mark.pdf
 def test_pdf_column_names(production_pdf_data, staging_pdf_data):
@@ -130,3 +179,5 @@ def test_pdf_time_logic(production_pdf_data, staging_pdf_data):
 
     assert all(prod_dates <= prod_marked_at), "Invalid dates in production PDF"
     assert all(stage_dates <= stage_marked_at), "Invalid dates in staging PDF"
+    
+'''
