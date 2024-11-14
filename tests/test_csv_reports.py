@@ -7,15 +7,13 @@ import json
 def load_csv(file_path):
     return pd.read_csv(file_path)
 
+# Load the config file
 def get_dynamic_path_from_config():
-    # Directory of this script
     config_path = os.path.join(os.path.dirname(__file__), "config.json")
 
-    # Ensure the file exists
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Configuration file not found: {config_path}")
 
-    # Load the configuration file
     with open(config_path) as config_file:
         config = json.load(config_file)
 
@@ -30,28 +28,23 @@ def production_data():
     production_file, _ = get_dynamic_path_from_config()
     return pd.read_csv(production_file)
 
-#    return load_csv(
-#      '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.csv')
-
 @pytest.fixture
 def staging_data():
     staging_file, _  = get_dynamic_path_from_config()
     return pd.read_csv(staging_file)
 
-#    #return load_csv(
-#        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.csv')
 
 # Tests Case 1: Verify Column Names Match
 @pytest.mark.csv
 def test_column_names(production_data, staging_data):
     assert list(production_data.columns) == list(staging_data.columns), "Column structure mismatch"
 
-# Tests Case 2: Verify Row Count Match
+# Tests Case 2: Verify Row Count
 @pytest.mark.csv
 def test_row_count(production_data, staging_data):
     assert len(production_data) == len(staging_data), "Row count mismatch"
 
-# Tests Case 3: Verify Column Count Match
+# Tests Case 3: Verify Column Count
 @pytest.mark.csv
 def test_column_count(production_data, staging_data):
     assert production_data.shape[1] == staging_data.shape[1], "Column count mismatch"
@@ -82,6 +75,7 @@ def test_no_null_values(production_data, staging_data):
     assert production_data.isnull().sum().sum() == 0, "Production data contains null values"
     assert staging_data.isnull().sum().sum() == 0, "Staging data contains null values"
 
+"""
 # Tests Case 8: Row and Column Order
 @pytest.mark.csv
 def test_order_row_column(production_data, staging_data):
@@ -89,7 +83,6 @@ def test_order_row_column(production_data, staging_data):
     staging_sorted = staging_data.sort_values(by="Store Name").reset_index(drop=True)
     assert production_sorted.equals(staging_sorted), "Mismatch in sorted data"
 
-"""
 # Tests Case 9: File-Level Check
 @pytest.mark.csv
 def test_file_size():

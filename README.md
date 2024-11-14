@@ -51,5 +51,40 @@ In order to get HTML report
 Only CSV or PDF test
 
         pytest tests/test_csv_reports.py
-        pytest tests/test_csv_reports.py
+        pytest -s tests/test_pdf_visual.py
+
 ----
+
+The rules for data validation
+
+1. Verify the Page Header 
+2. Verify the Report Name
+3. Verify selected data range
+4. Verify the column count
+4. Verify the column names
+5. Verify the row count
+6. Verify the page count
+7. Verify barcode placement
+8. Verify Article Number 
+9. Verify Store Name
+10. Verify Brand
+11. Verify Aisie 
+12. Verify Department
+13. Verify Case Pack Size
+14. Verify SR at Marked at Time
+15. Verify Current SR
+16. Verify Marked by
+17. Verify Marked At 
+18. Verify Marked As
+19. Verify Last Received Date
+20. Verify Approval's
+21. Verify the format of Marked At 
+22. Verify the format of Last Received Date
+
+Optioinal/Good to have:
+23. Verify if FocalOS logo is centered
+24. Think about how to verify multiple pages PDFs
+25. Verify the column order
+26. Verify sorting
+27. Verify for empty fields
+
