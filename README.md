@@ -44,10 +44,12 @@ Clone the repository or download the project files:
 Run the Tests:
 From your project directory, run:
 
-        pytest tests/test_reports.py
-
 In order to get HTML report
 
-        pytest /Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests --html=report.html --self-contained-html
+        pytest tests
 
+Only CSV or PDF test
+
+        pytest tests/test_csv_reports.py
+        pytest tests/test_csv_reports.py
 ----
