@@ -3,8 +3,6 @@ import pandas as pd
 import pdfplumber
 import json
 
-mport json
-
 # Sample function to load data (use your actual loading logic)
 def load_csv(file_path):
     return pd.read_csv(file_path)
@@ -132,5 +130,3 @@ def test_pdf_time_logic(production_pdf_data, staging_pdf_data):
 
     assert all(prod_dates <= prod_marked_at), "Invalid dates in production PDF"
     assert all(stage_dates <= stage_marked_at), "Invalid dates in staging PDF"
-
-'''
