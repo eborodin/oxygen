@@ -19,7 +19,7 @@ def get_dynamic_path_from_config(key):
 
     return config[key]
 
-# Compare two PDF files visually using diff-pdf-visually.
+# Compare two PDF files visually by using diff-pdf-visually
 def compare_pdfs_visually(production_pdf, staging_pdf, output_diff_path):
     try:
         if not os.path.isabs(output_diff_path):

@@ -56,10 +56,13 @@ Only CSV or PDF test
 ----
 
 The rules for data validation
+Let's assume that the PROD data is correct and is our source of truth. 
+The rules are the following:
 
-1. Verify the Page Header 
-2. Verify the Report Name
-3. Verify selected data range
+
+1. Verify the Page Header (PDF only)
+2. Verify the Report Name (PDF only)
+3. Verify selected data range (PDF only)
 4. Verify the column count
 4. Verify the column names
 5. Verify the row count
@@ -83,8 +86,9 @@ The rules for data validation
 
 Optioinal/Good to have:
 23. Verify if FocalOS logo is centered
-24. Think about how to verify multiple pages PDFs
-25. Verify the column order
-26. Verify sorting
-27. Verify for empty fields
+24. Think about how to verify multiple PDFs
+25. Verify the correct column order
+26. Verify sorting 
+27. Verify for empty fields in PDF
+28. 
 
