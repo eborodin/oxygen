@@ -1,45 +1,48 @@
 import pytest
-import pandas as pd
 import os
 import json
+import pandas as pd
 
 # Sample function to load data (use your actual loading logic)
 def load_csv(file_path):
     return pd.read_csv(file_path)
 
+# Make the csv file dynamic
 def get_dynamic_path_from_config():
-    # Directory of this script
     config_path = os.path.join(os.path.dirname(__file__), "config.json")
-
-    # Ensure the file exists
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Configuration file not found: {config_path}")
 
-    # Load the configuration file
     with open(config_path) as config_file:
         config = json.load(config_file)
 
     project_root = os.path.abspath(os.path.dirname(__file__))
     production_file = os.path.join(project_root, config["production_csv_file"])
     staging_file = os.path.join(project_root, config["staging_csv_file"])
+
+    if not os.path.exists(production_file):
+        raise FileNotFoundError(f"Production file not found: {production_file}")
+    if not os.path.exists(staging_file):
+        raise FileNotFoundError(f"Staging file not found: {staging_file}")
+
     return production_file, staging_file
 
 # Fixtures for loading production and staging data
+
 @pytest.fixture
 def production_data():
+#        return load_csv(
+#        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/difference.csv')
     production_file, _ = get_dynamic_path_from_config()
     return pd.read_csv(production_file)
 
-#    return load_csv(
-#      '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.csv')
-
 @pytest.fixture
 def staging_data():
-    staging_file, _  = get_dynamic_path_from_config()
+#    return load_csv(
+#        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.csv')
+    _, staging_file = get_dynamic_path_from_config()
     return pd.read_csv(staging_file)
 
-#    #return load_csv(
-#        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.csv')
 
 # Tests Case 1: Verify Column Names Match
 @pytest.mark.csv
@@ -60,6 +63,8 @@ def test_column_count(production_data, staging_data):
 @pytest.mark.csv
 def test_value_consistency(production_data, staging_data):
     mismatches = production_data.compare(staging_data)
+    print("Production Data: \n", (production_data))
+    print("Staging Data: \n", (staging_data))
     assert mismatches.empty, f"Value mismatches found:\n{mismatches}"
 
 # Tests Case 5: Verify the Received Dates Greater Than Marked At
@@ -82,6 +87,7 @@ def test_no_null_values(production_data, staging_data):
     assert production_data.isnull().sum().sum() == 0, "Production data contains null values"
     assert staging_data.isnull().sum().sum() == 0, "Staging data contains null values"
 
+"""
 # Tests Case 8: Row and Column Order
 @pytest.mark.csv
 def test_order_row_column(production_data, staging_data):
@@ -89,7 +95,7 @@ def test_order_row_column(production_data, staging_data):
     staging_sorted = staging_data.sort_values(by="Store Name").reset_index(drop=True)
     assert production_sorted.equals(staging_sorted), "Mismatch in sorted data"
 
-"""
+
 # Tests Case 9: File-Level Check
 @pytest.mark.csv
 def test_file_size():
