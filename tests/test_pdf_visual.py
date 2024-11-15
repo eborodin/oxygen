@@ -7,7 +7,7 @@ import pytest_html
 
 # Load the config file
 def get_dynamic_path_from_config(key):
-    config_path = os.path.join(os.path.dirname(__file__), "/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/config.json")
+    config_path = os.path.join(os.path.dirname(__file__), "config.json")
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Configuration file not found: {config_path}")
 
@@ -69,4 +69,3 @@ def test_visual_pdf_comparison(request):
             request.node.extra = extra
             pytest.fail("PDFs are not visually identical. See the attached Difference PDF.")
 """
-

@@ -52,6 +52,7 @@ Only CSV or PDF test
 
         pytest tests/test_csv_reports.py
         pytest -s tests/test_pdf_visual.py
+        pytest tests/test_csv_reports.py
 
 ----
 
