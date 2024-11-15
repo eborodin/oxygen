@@ -5,18 +5,18 @@ The task is to automate regression testing for our reports. Attached you will fi
 The focus on key aspects of the data:
 
 1. Structure Validation:
-Column names must match between production and staging
+ Column names must match between production and staging 
 | Column count must match
-| Row count must match
+| Row count must match 
 2. Data Integrity:
 Key columns are required 
 | No missing values in columns
 3. Data Consistency:
-Production values must match Staging values
-|	Specific column validations (numeric ranges, date order)
+Production values must match Staging values 
+| Specific column validations (numeric ranges, date order) 
 4.	Additional Logic:
 Valid date and time for fields like 
-|“Last Received Date” must be earlier than “Marked At”
+| “Last Received Date” must be earlier than “Marked At”
 ---
 ## Test Cases
 1. Verify the Page Header (PDF only)
@@ -44,6 +44,7 @@ Valid date and time for fields like
 22. Verify the format of Last Received Date (YYYY-MM-DD HH:MM:SS)
 
 Optioinal/Good to have:
+
 23. Verify if FocalOS logo is centered
 24. Think about how to verify multiple PDFs
 25. Verify the correct column order
