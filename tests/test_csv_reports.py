@@ -1,104 +1,132 @@
-import pytest
-import os
-import json
+import pdfplumber
 import pandas as pd
+import pytest
+import json
+import os
+import csv
+from pdf2image import convert_from_path
+import pytesseract
 
-# Sample function to load data (use your actual loading logic)
-def load_csv(file_path):
-    return pd.read_csv(file_path)
-
-# Make the csv file dynamic
-def get_dynamic_path_from_config():
-    config_path = os.path.join(os.path.dirname(__file__), "config.json")
+def load_config(config_file="config.json"):
+    config_path = os.path.join(os.path.dirname(__file__), config_file)
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Configuration file not found: {config_path}")
 
-    with open(config_path) as config_file:
-        config = json.load(config_file)
+    with open(config_path, "r") as file:
+        config = json.load(file)
 
-    project_root = os.path.abspath(os.path.dirname(__file__))
-    production_file = os.path.join(project_root, config["production_csv_file"])
-    staging_file = os.path.join(project_root, config["staging_csv_file"])
-
-    if not os.path.exists(production_file):
-        raise FileNotFoundError(f"Production file not found: {production_file}")
-    if not os.path.exists(staging_file):
-        raise FileNotFoundError(f"Staging file not found: {staging_file}")
-
-    return production_file, staging_file
-
-# Fixtures for loading production and staging data
-
-@pytest.fixture
-def production_data():
-#        return load_csv(
-#        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.csv')
-    production_file, _ = get_dynamic_path_from_config()
-    return pd.read_csv(production_file)
-
-@pytest.fixture
-def staging_data():
-#    return load_csv(
-#        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.csv')
-    _, staging_file = get_dynamic_path_from_config()
-    return pd.read_csv(staging_file)
+    return config
 
 
-# Tests Case 1: Verify Column Names Match
-@pytest.mark.csv
-def test_column_names(production_data, staging_data):
-    assert list(production_data.columns) == list(staging_data.columns), "Column structure mismatch"
+config = load_config()
 
-# Tests Case 2: Verify Row Count Match
-@pytest.mark.csv
-def test_row_count(production_data, staging_data):
-    assert len(production_data) == len(staging_data), "Row count mismatch"
+# Dynamically load paths from config
+pdf_path = config["production_pdf"]
+output_csv_path = config["output_csv_path"]
+# output_json_path = config["output_json_path"]
 
-# Tests Case 3: Verify Column Count Match
-@pytest.mark.csv
-def test_column_count(production_data, staging_data):
-    assert production_data.shape[1] == staging_data.shape[1], "Column count mismatch"
+print(f"PDF Path: {pdf_path}")
+print(f"Output CSV Path: {output_csv_path}")
+# print(f"Output JSON Path: {output_json_path}")
 
-# Tests Case 4: Verify Values Consistency
-@pytest.mark.csv
-def test_value_consistency(production_data, staging_data):
-    mismatches = production_data.compare(staging_data)
-    print("Production Data: \n", (production_data))
-    print("Staging Data: \n", (staging_data))
-    assert mismatches.empty, f"Value mismatches found:\n{mismatches}"
 
-# Tests Case 5: Verify the Received Dates Greater Than Marked At
-@pytest.mark.csv
-def test_time_logic(production_data, staging_data):
-    # Check if 'Last Received Date' <= 'Marked At'
-    assert all(pd.to_datetime(production_data['Last Received Date']) <= pd.to_datetime(production_data['Marked At'])), \
-        "Invalid dates in production data"
-    assert all(pd.to_datetime(staging_data['Last Received Date']) <= pd.to_datetime(staging_data['Marked At'])), \
-        "Invalid dates in staging data"
+# Extract text from a PDF
+"""
+def extract_text_with_ocr(pdf_path):
+    images = convert_from_path(pdf_path)
+    text = ""
+    for image in images:
+        text += pytesseract.image_to_string(image) + "\n"
+    print("Extracted Text:", text)
+    return text
 
-# Tests Case 6: There are no Duplicate rows
-@pytest.mark.csv
-def test_duplicate_values(production_data, staging_data):
-    assert production_data.duplicated().sum() == staging_data.duplicated().sum(), "Duplicate row mismatch"
+def process_text_to_table(raw_text):
+    rows = raw_text.split("\n")
+    structured_data = [row.split() for row in rows if row.strip()]  # Adjust split logic as needed
+    return structured_data
 
-# Tests Case 7: Verify Data Isn't Null
-@pytest.mark.csv
-def test_no_null_values(production_data, staging_data):
-    assert production_data.isnull().sum().sum() == 0, "Production data contains null values"
-    assert staging_data.isnull().sum().sum() == 0, "Staging data contains null values"
+raw_text = extract_text_from_pdf(pdf_path)
+table = process_text_to_table(raw_text)
+print("Structured Data:", table)
+"""
+
+# Extract text and save it to a CSV file, one line per row.
+"""
+def extract_text_by_line_to_csv(pdf_path, output_csv_path):
+    
+    with pdfplumber.open(pdf_path) as pdf:
+        lines = []
+        for page in pdf.pages:
+            page_text = page.extract_text()
+            if page_text:
+                lines.extend(page_text.split("\n"))
+
+    with open(output_csv_path, "w", newline="") as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(["Production Data"])  # Header
+        for line in lines:
+            writer.writerow([line])
+
+extract_text_by_line_to_csv(pdf_path, output_csv_path)
+
+print(f"Text extracted and saved to {output_csv_path}")
 
 """
-# Tests Case 8: Row and Column Order
-@pytest.mark.csv
-def test_order_row_column(production_data, staging_data):
-    production_sorted = production_data.sort_values(by="Store Name").reset_index(drop=True)
-    staging_sorted = staging_data.sort_values(by="Store Name").reset_index(drop=True)
-    assert production_sorted.equals(staging_sorted), "Mismatch in sorted data"
 
+# Extract text and organize in a table, save it to a CSV file
 
-# Tests Case 9: File-Level Check
-@pytest.mark.csv
-def test_file_size():
-    assert os.path.getsize("production.csv") == os.path.getsize("staging.csv"), "File size mismatch"
+def extract_text_and_process(pdf_path):
+    structured_data = []
 
-"""
+    with pdfplumber.open(pdf_path) as pdf:
+        for page_number, page in enumerate(pdf.pages, start=1):
+            raw_text = page.extract_text()
+
+            if not raw_text:
+                print(f"No text found on page {page_number}. Skipping...")
+                continue
+
+            # Split text into lines and process
+            lines = raw_text.split("\n")
+
+            # Ignore the first two lines (as per your requirement)
+            lines = lines[2:]
+
+            for line in lines:
+                # Split the line into fields by whitespace
+                row = line.split()
+                structured_data.append(row)
+
+    if not structured_data:
+        raise ValueError("No data extracted from the PDF.")
+
+    # Dynamically find the longest row to determine the number of columns
+    max_columns = max(len(row) for row in structured_data)
+    print(f"Maximum columns detected: {max_columns}")
+
+    # Handle header and data
+    header = structured_data[0] if len(structured_data[0]) == max_columns else ["Column" + str(i) for i in range(max_columns)]
+    data_rows = structured_data[1:]
+
+    # Normalize rows to match the header length
+    normalized_rows = [row + [""] * (max_columns - len(row)) for row in data_rows]
+
+    # Create DataFrame
+    df = pd.DataFrame(normalized_rows, columns=header)
+    return df
+
+def save_to_csv(df, output_csv_path):
+    df.to_csv(output_csv_path, index=False)
+    print(f"Data saved to {output_csv_path}")
+
+try:
+    # Extract and organize data from PDF
+    data_df = extract_text_and_process(pdf_path)
+
+    # Save the organized data to a CSV file
+    save_to_csv(data_df, output_csv_path)
+
+    print("Extracted Data:\n", data_df.head())
+except Exception as e:
+    print(f"Error during extraction: {e}")
+
