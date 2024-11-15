@@ -15,7 +15,7 @@ Key columns are required
 Production values must match Staging values 
 | Specific column validations (numeric ranges, date order) 
 4.	Additional Logic:
-Valid date and time for fields like 
+Valid format for date and time fields
 | “Last Received Date” must be earlier than “Marked At”
 ---
 ## Test Cases
