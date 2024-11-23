@@ -102,4 +102,4 @@ Individual Tests:
 
         pytest tests/test_csv_reports.py
         pytest tests/test_pdf_visual.py
-        pytest tests/test_csv_reports.py
+        pytest tests/test_pdf_report_extract.py -vv
