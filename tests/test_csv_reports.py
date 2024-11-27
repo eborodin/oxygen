@@ -45,6 +45,7 @@ def staging_data():
 @pytest.mark.csv
 def test_column_names(production_data, staging_data):
     assert list(production_data.columns) == list(staging_data.columns), "Column structure mismatch"
+
 """
 # Test Case 1.1: Checking for a specific column
 @pytest.mark.csv
@@ -103,12 +104,12 @@ def test_time_logic(production_data, staging_data):
     assert all(pd.to_datetime(staging_data['Last Received Date']) <= pd.to_datetime(staging_data['Marked At'])), \
         "Invalid dates in staging data"
 
+"""
 # Tests Case 6: There are no Duplicate rows
 @pytest.mark.csv
 def test_duplicate_values(production_data, staging_data):
     assert production_data.duplicated().sum() == staging_data.duplicated().sum(), "Duplicate row mismatch"
 
-"""
 # Tests Case 7: Verify Data Isn't Null
 @pytest.mark.csv
 def test_no_null_values(production_data, staging_data):
@@ -119,6 +120,17 @@ def test_no_null_values(production_data, staging_data):
     assert production_data.isnull().sum().sum() == 0, "Production data contains null values"
     assert staging_data.isnull().sum().sum() == 0, "Staging data contains null values"
 
+# Tests Case 7.1: Checks for null values in the PROD data
+@pytest.mark.csv
+def test_no_null_values_debug(production_data, staging_data):
+    # Find rows with null values
+    prod_null_rows = production_data[production_data.isnull().any(axis=1)]
+    stage_null_rows = staging_data[staging_data.isnull().any(axis=1)]
+
+    # Assert no null values
+    assert prod_null_rows.empty, f"Production data contains null rows:\n{prod_null_rows}"
+    assert stage_null_rows.empty, f"Staging data contains null rows:\n{stage_null_rows}"
+
 # Tests Case 8: Row and Column Order
 @pytest.mark.csv
 def test_order_row_column(production_data, staging_data):
@@ -126,8 +138,7 @@ def test_order_row_column(production_data, staging_data):
     staging_sorted = staging_data.sort_values(by="Store Name").reset_index(drop=True)
     assert production_sorted.equals(staging_sorted), "Mismatch in sorted data"
 
-
-# Tests Case 9: File-Level Check
+# Tests Case 9: File-size Check
 @pytest.mark.csv
 def test_file_size():
     assert os.path.getsize("production.csv") == os.path.getsize("staging.csv"), "File size mismatch"
