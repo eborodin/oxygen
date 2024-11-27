@@ -3,9 +3,10 @@ import chardet
 import pytest
 import json
 import os
+import fitz
 import pytesseract
 from pdf2image import convert_from_path
-import fitz
+
 
 def detect_encoding(file_path):
     with open(file_path, "rb") as f:
@@ -151,7 +152,6 @@ def test_extract_text_and_process():
     save_extracted_text(production_text, production_txt_format)
     save_extracted_text(staging_text, staging_txt_format)
 
-"""
     # Save text for manual inspection
     with open(production_raw_txt, "w") as prod_file:
         prod_file.write(production_text)
@@ -168,4 +168,4 @@ def test_extract_text_and_process():
         ))
         with open(text_diff_txt, "w") as diff_file:
             diff_file.write(diff)
-        pytest.fail("Mismatch between Production and Staging PDFs. See 'text_differences.txt'.")"""
+        pytest.fail("Mismatch between Production and Staging PDFs. See 'text_differences.txt'.")
