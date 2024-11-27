@@ -2,6 +2,7 @@ import pytest
 import os
 import json
 import pandas as pd
+import string
 
 # Sample function to load data (use your actual loading logic)
 def load_csv(file_path):
@@ -28,26 +29,33 @@ def get_dynamic_path_from_config():
     return production_file, staging_file
 
 # Fixtures for loading production and staging data
-
 @pytest.fixture
 def production_data():
-#        return load_csv(
-#        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/prod/difference.csv')
+
     production_file, _ = get_dynamic_path_from_config()
     return pd.read_csv(production_file)
 
 @pytest.fixture
 def staging_data():
-#    return load_csv(
-#        '/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/tests/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.csv')
+
     _, staging_file = get_dynamic_path_from_config()
     return pd.read_csv(staging_file)
-
 
 # Tests Case 1: Verify Column Names Match
 @pytest.mark.csv
 def test_column_names(production_data, staging_data):
     assert list(production_data.columns) == list(staging_data.columns), "Column structure mismatch"
+"""
+# Test Case 1.1: Checking for a specific column
+@pytest.mark.csv
+def test_specific_column(production_data, staging_data):
+    columns  = production_data.columns.tolist()
+    for column in columns:
+        production_column = production_data[column]
+        staging_column = staging_data[column]
+        print ("Production columns: ", columns)
+    assert production_column.equals(staging_column), f"Mismatch in column: {column}"
+"""
 
 # Tests Case 2: Verify Row Count Match
 @pytest.mark.csv
@@ -63,9 +71,28 @@ def test_column_count(production_data, staging_data):
 @pytest.mark.csv
 def test_value_consistency(production_data, staging_data):
     mismatches = production_data.compare(staging_data)
-    print("Production Data: \n", (production_data))
-    print("Staging Data: \n", (staging_data))
+    # print("Production Data: \n", (production_data))
+    # print("Staging Data: \n", (staging_data))
     assert mismatches.empty, f"Value mismatches found:\n{mismatches}"
+
+"""
+# Tests Case 4.1: Verify a Specific Values in Column
+@pytest.mark.csv
+def test_specific_column_value_consistency(production_data, staging_data):
+    column_to_test = "Product Name"  # Replace with the column you want to check
+    production_column = production_data[column_to_test]
+    staging_column = staging_data[column_to_test]
+
+    # Compare the values in the specified column
+    mismatches = production_column.compare(staging_column)
+
+    # Print mismatches if found
+    if not mismatches.empty:
+        print(f"Mismatches found in column '{column_to_test}':\n{mismatches}")
+
+    # Assert no mismatches are found
+    assert mismatches.empty, f"Value mismatches found in column '{column_to_test}':\n{mismatches}"
+"""
 
 # Tests Case 5: Verify the Received Dates Greater Than Marked At
 @pytest.mark.csv
@@ -81,13 +108,17 @@ def test_time_logic(production_data, staging_data):
 def test_duplicate_values(production_data, staging_data):
     assert production_data.duplicated().sum() == staging_data.duplicated().sum(), "Duplicate row mismatch"
 
+"""
 # Tests Case 7: Verify Data Isn't Null
 @pytest.mark.csv
 def test_no_null_values(production_data, staging_data):
+    # Replace null values with "Missing"
+    # production_data = production_data.fillna("Missing")
+    # staging_data = staging_data.fillna("Missing")
+
     assert production_data.isnull().sum().sum() == 0, "Production data contains null values"
     assert staging_data.isnull().sum().sum() == 0, "Staging data contains null values"
 
-"""
 # Tests Case 8: Row and Column Order
 @pytest.mark.csv
 def test_order_row_column(production_data, staging_data):

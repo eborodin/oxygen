@@ -25,10 +25,10 @@ Valid date and time for fields like
 4. Verify the column count
 4. Verify the column names
 5. Verify the row count
-6. Verify the page count
-7. Verify barcode placement 
+6. Verify the page count (PDF only)
+7. Verify Store Name field
+8. Verify Barcode field
 8. Verify Article Number field
-9. Verify Store Name field
 10. Verify Brand field
 11. Verify Aisle field
 12. Verify Department field
@@ -80,6 +80,7 @@ Install Pytest:
 PDF Required Libraries
 
         pip install pytest pdfplumber pandas
+        pip install pymupdf
 
 Files:
 
