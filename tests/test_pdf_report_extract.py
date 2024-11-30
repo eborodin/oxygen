@@ -8,19 +8,19 @@ import pytesseract
 from pdf2image import convert_from_path
 
 
-def detect_encoding(file_path):
-    with open(file_path, "rb") as f:
-        result = chardet.detect(f.read())
-    encoding = result.get("encoding", "utf-8")  # Default to utf-8 if detection fails
-    confidence = result.get("confidence", 0)
+# def detect_encoding(file_path):
+#     with open(os.path.join(os.getcwd(), file_path), "rb") as f:
+#         result = chardet.detect(f.read())
+#     encoding = result.get("encoding", "utf-8")  # Default to utf-8 if detection fails
+#     confidence = result.get("confidence", 0)
 
-    print(f"Detected encoding: {encoding} with confidence: {confidence}")
+#     print(f"Detected encoding: {encoding} with confidence: {confidence}")
 
-    # If confidence is low, fallback to utf-8 or another robust encoding
-    if confidence < 0.8 or encoding is None:
-        print("Low confidence in detected encoding. Falling back to 'utf-8'.")
-        encoding = "utf-8"
-    return encoding
+#     # If confidence is low, fallback to utf-8 or another robust encoding
+#     if confidence < 0.8 or encoding is None:
+#         print("Low confidence in detected encoding. Falling back to 'utf-8'.")
+#         encoding = "utf-8"
+#     return encoding
 
 def get_dynamic_path_from_config():
     config_path = os.path.join(os.path.dirname(__file__), "config.json")
@@ -30,7 +30,7 @@ def get_dynamic_path_from_config():
     with open(config_path) as config_file:
         config = json.load(config_file)
 
-    project_root = os.path.abspath(os.path.dirname(__file__))
+    project_root = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..")
     production_file = os.path.join(project_root, config["production_pdf"])
     staging_file = os.path.join(project_root, config["staging_pdf"])
     output_directory = os.path.join(project_root, config["output_diff"])

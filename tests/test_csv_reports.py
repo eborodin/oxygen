@@ -5,8 +5,8 @@ import pandas as pd
 import string
 
 # Sample function to load data (use your actual loading logic)
-def load_csv(file_path):
-    return pd.read_csv(file_path)
+# def load_csv(file_path):
+#     return pd.read_csv(os.path.join(os.getcwd(), file_path))
 
 # Make the csv file dynamic
 def get_dynamic_path_from_config():
@@ -17,7 +17,7 @@ def get_dynamic_path_from_config():
     with open(config_path) as config_file:
         config = json.load(config_file)
 
-    project_root = os.path.abspath(os.path.dirname(__file__))
+    project_root = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..")
     production_file = os.path.join(project_root, config["production_csv_file"])
     staging_file = os.path.join(project_root, config["staging_csv_file"])
 
