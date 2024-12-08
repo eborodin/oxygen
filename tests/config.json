@@ -1,9 +1,10 @@
 {
-    "production_csv_file": "/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/data/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.csv",
-    "staging_csv_file": "/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/data/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.csv",
-    "production_pdf": "/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/data/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.pdf",
-    "staging_pdf": "/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/data/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.pdf",
-    "output_diff_path": "/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/data/diff/difference.pdf",
-    "output_csv_path": "/Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/data/diff/difference.csv",
-    "output_json_path": "//Users/eugeneborodin/PycharmProjects/pythonProject/focal_system_env/data/diffdifference.json"
+  "production_csv_file": "data/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.csv",
+  "staging_csv_file": "data/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.csv",
+  "production_pdf": "data/prod/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_prod.pdf",
+  "staging_pdf": "data/staging/gap_report_grocery_focal_superstore_101_2024-10-28_2024-10-28_stage.pdf",
+  "output_diff_path": "data/diff/difference.pdf",
+  "output_csv_path": "data/diff/difference.csv",
+  "output_json_path": "data/diff/difference.json",
+  "output_diff": "data/diff"
 }
